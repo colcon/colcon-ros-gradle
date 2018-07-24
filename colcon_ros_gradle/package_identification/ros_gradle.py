@@ -12,7 +12,7 @@ from colcon_core.plugin_system import satisfies_version
 
 
 class RosGradlePackageIdentification(PackageIdentificationExtensionPoint):
-    """Identify Gradle packages with `build.gradle` files."""
+    """Identify Gradle packages with `build.gradle` and `package.xml` files."""
 
     PRIORITY = 160
 
