@@ -11,7 +11,7 @@ except ImportError:
 from colcon_core.plugin_system import satisfies_version
 
 
-class RosGradleArgcompleteCompleter(ArgcompleteCompleterExtensionPoint):
+class AmentGradleArgcompleteCompleter(ArgcompleteCompleterExtensionPoint):
     """Completion of Gradle arguments."""
 
     def __init__(self):  # noqa: D107

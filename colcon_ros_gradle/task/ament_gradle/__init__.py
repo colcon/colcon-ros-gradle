@@ -12,7 +12,7 @@ from colcon_core.subprocess import check_output
 """Environment variable to override the Gradle executable"""
 GRADLE_COMMAND_ENVIRONMENT_VARIABLE = EnvironmentVariable(
     'GRADLE_COMMAND', 'The full path to the Gradle executable')
-    
+
 """Environment variable to override the Gradle executable"""
 GRADLE_HOME_ENVIRONMENT_VARIABLE = EnvironmentVariable(
     'GRADLE_HOME', 'The full path to the Gradle home')
@@ -37,7 +37,7 @@ def which_executable(environment_variable, executable_name):
     cmd = None
     env_cmd = os.getenv(environment_variable)
     env_home = os.getenv(GRADLE_HOME_ENVIRONMENT_VARIABLE.name)
-    
+
     # Case of GRADLE_COMMAND (colcon)
     if env_cmd is not None and Path(env_cmd).is_file():
         cmd = env_cmd
