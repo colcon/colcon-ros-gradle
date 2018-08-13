@@ -14,6 +14,8 @@ class RosGradlePackageIdentification(PackageIdentificationExtensionPoint):
     Identify ROS Gradle packages with `package.xml` and `build.gradle` files.
     """
 
+    # the priority needs to be higher than the ROS extensions identifying
+    # packages using the build systems supported by ROS Gradle.
     PRIORITY = 160
 
     def __init__(self):  # noqa: D107
