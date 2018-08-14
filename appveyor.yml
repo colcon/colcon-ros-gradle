@@ -7,7 +7,7 @@ install:
   # install_requires
   - "%PYTHON%\\python.exe -m pip install -U git+https://github.com/colcon/colcon-core"
   - "%PYTHON%\\python.exe -m pip install -U git+https://github.com/colcon/colcon-library-path"
-  - "%PYTHON%\\python.exe -m pip install -U git+https://github.com/colcon/colcon-ros-gradle"
+  - "%PYTHON%\\python.exe -m pip install -U git+https://github.com/colcon/colcon-gradle"
   # tests_require, except pyenchant
   - "%PYTHON%\\python.exe -m pip install -U flake8-blind-except flake8-builtins flake8-class-newline flake8-comprehensions flake8-deprecated flake8-docstrings flake8-quotes pep8-naming pylint pytest pytest-cov"
 build: off
