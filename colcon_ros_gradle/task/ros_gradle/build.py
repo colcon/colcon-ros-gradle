@@ -35,9 +35,25 @@ class RosGradleBuildTask(TaskExtensionPoint):
             "Building ROS package in '{args.path}' with build type 'ros.gradle'"
             .format_map(locals()))
 
-        # reuse Gradle build task with additional logic
+        # reuse Gradle build task with additional logic.
         extension = GradleBuildTask()
+
+        # Generate list of dependencies.
+        deps = []
+        for dep in self.context.pkg.dependencies['build'] or []:
+            if dep in self.context.dependencies:
+                deps.append(self.context.dependencies[dep])
+
+        # Append extra arguments.
+        ros_gradle_args = [
+            '-Pcolcon.source_space=' + args.path,
+            '-Pcolcon.build_space=' + args.build_base,
+            '-Pcolcon.install_space=' + args.install_base,
+            '-Pcolcon.dependencies=' + ':'.join(deps),
+        ]
+        args.gradle_args += ros_gradle_args
+
         extension.set_context(context=self.context)
-        
+
         return await extension.build()
 
