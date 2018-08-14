@@ -1,6 +1,9 @@
 # Copyright 2018 Esteve Fernandez
 # Licensed under the Apache License, Version 2.0
 
+
+import copy
+
 from colcon_core.package_identification \
     import PackageIdentificationExtensionPoint
 from colcon_core.plugin_system import satisfies_version
@@ -28,21 +31,35 @@ class RosGradlePackageIdentification(PackageIdentificationExtensionPoint):
         if desc.type is not None and desc.type != 'ros.gradle':
             return
 
+        # Preserving the state of the package descriptor so as not to overload
+        # the build type is a "common", one like "cmake".
+        tmp_desc = copy.deepcopy(desc)
+
         # Call ROS package identification extention.
         ros_extension = RosPackageIdentification()
-        ros_extension.identify(desc)
-        if desc.type != 'ros.gradle':
+        ros_extension.identify(tmp_desc)
+
+        # Validate that is ROS gradle package.
+        if tmp_desc.type != 'ros.gradle':
             return
 
-        # Disable build type.
-        desc.type = None
+        # Disable ROS Gradle build type for use Gradle package identification
+        # extension (reject if build type has defined).
+        tmp_desc.type = None
 
-        # Call Gradle package identification extention.
+        # Call Gradle package identification extention
+        # (for append gradle logic).
         gradle_extention = GradlePackageIdentification()
-        gradle_extention.identify(desc)
-        if desc.type != 'gradle':
+        gradle_extention.identify(tmp_desc)
+        
+        # Validate that is gradle package logic.
+        if tmp_desc.type != 'gradle':
             return
 
-        # Define build type (ros.gradle).
+        # Update package descriptor instance (if has valide build type).
         desc.type = 'ros.gradle'
+        desc.name = tmp_desc.name
+        desc.dependencies = tmp_desc.dependencies
+        desc.hooks = tmp_desc.hooks
+        desc.metadata = tmp_desc.metadata
 
