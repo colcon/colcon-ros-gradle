@@ -28,6 +28,11 @@ class AmentGradleBuildTask(GradleBuildTask):
             [os.path.join(
                 dep, 'share', pkg
             ) for pkg, dep in self.context.dependencies.items()])
+        ament_exec_dependency_paths_in_workspace = ':'.join(
+            [os.path.join(
+                dep, 'share', pkg
+            ) for pkg, dep in self.context.dependencies.items()
+            if pkg in self.context.pkg.dependencies['run']])
 
         args.gradle_args = (args.gradle_args or [])
         args.gradle_args += ['-Pament.source_space={}'.format(args.path)]
@@ -35,6 +40,10 @@ class AmentGradleBuildTask(GradleBuildTask):
         args.gradle_args += ['-Pament.install_space={}'.format(args.install_base)]
         args.gradle_args += ['-Pament.dependencies={}'.format(ament_dependencies)]
         args.gradle_args += ['-Pament.package_manifest.name={}'.format(self.context.pkg.name)]
+        args.gradle_args += ['-Pament.exec_dependency_paths_in_workspace={}'.format(
+            ament_exec_dependency_paths_in_workspace)]
+        # TODO(esteve): ament.gradle_recursive_dependencies is hardcoded to False for now
+        args.gradle_args += ['-Pament.gradle_recursive_dependencies={}'.format(False)]
         return await super(AmentGradleBuildTask, self)._build(args, env)
 
     async def _install(self, args, env):
