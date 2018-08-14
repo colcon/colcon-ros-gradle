@@ -23,7 +23,7 @@ class AmentGradlePackageIdentification(PackageIdentificationExtensionPoint):
             '^1.0')
 
     def identify(self, metadata):  # noqa: D102
-        if metadata.type is not None and metadata.type != 'gradle':
+        if metadata.type is not None and metadata.type != 'ament_gradle':
             return
 
         build_gradle = metadata.path / 'build.gradle'
@@ -57,7 +57,7 @@ def extract_data(build_gradle):
     :rtype: dict
     """
     # Content for dependencies
-    content_build_gradle = extract_content(build_gradle)
+    content_build_gradle = super(AmentGradlePackageIdentification, self).extract_content(build_gradle)
     match = re.search(r'apply plugin: ("|\')org.ros2.tools.gradle\1', content)
     if not match:
         raise RuntimeError("Gradle plugin missing, please add the following to build.gradle: \"apply plugin: 'org.ros2.tools.gradle'\"")
@@ -75,81 +75,3 @@ def extract_data(build_gradle):
     data['depends'] = set()
 
     return data
-
-
-def extract_content(basepath, filename='build.gradle', exclude=None):
-    """
-    Get all non-comment lines from build.gradle files under the given basepath.
-
-    :param Path basepath: The path to recursively crawl
-    :param list exclude: The paths to exclude
-    :rtype: str
-    """
-    if basepath.is_file():
-        content = basepath.read_text(errors='replace')
-    elif basepath.is_dir():
-        content = ''
-        for dirpath, dirnames, filenames in os.walk(str(basepath)):
-            # skip subdirectories starting with a dot
-            dirnames[:] = filter(lambda d: not d.startswith('.'), dirnames)
-            dirnames.sort()
-
-            for name in sorted(filenames):
-                if name != filename:
-                    continue
-
-                path = Path(dirpath) / name
-                if path in (exclude or []):
-                    continue
-
-                content += path.read_text(errors='replace') + '\n'
-    else:
-        return ''
-    return _remove_gradle_comments(content)
-
-
-def _remove_gradle_comments(content):
-    # based on https://stackoverflow.com/questions/241327/python-snippet-to-remove-c-and-c-comments#241506
-    def replacer(match):
-        s = match.group(0)
-        if s.startswith('/'):
-            return " " # note: a space and not an empty string
-        else:
-            return s
-    pattern = re.compile(
-        r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
-        re.DOTALL | re.MULTILINE
-    )
-    return re.sub(pattern, replacer, content)
-
-def extract_project_name(content):
-    """
-    Extract the Gradle project name from the Gradle settings file.
-
-    Find `rootProject.name` declaration in settings file.
-
-    :param str content: The Gradle build file
-    :returns: The project name, otherwise None
-    :rtype: str
-    """
-    # extract project name
-    match = re.search(
-        # https://regex101.com/r/KzrkzB/1/
-        # keyword
-        'rootProject\.name'
-        # optional white space
-        '\s*'
-        # equal assignment
-        '='
-        # optional white space
-        '\s*'
-        # optional "opening" quote
-        '("|\')'
-        # project name
-        '([a-zA-Z0-9_-]+)'
-        # optional "closing" quote (only if an "opening" quote was used)
-        r'\1',
-        content)
-    if not match:
-        return None
-    return match.group(2)
