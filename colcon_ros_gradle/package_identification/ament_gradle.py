@@ -11,7 +11,7 @@ from colcon_core.package_identification \
 from colcon_core.plugin_system import satisfies_version
 
 
-class RosGradlePackageIdentification(PackageIdentificationExtensionPoint):
+class AmentGradlePackageIdentification(PackageIdentificationExtensionPoint):
     """Identify Gradle packages with `build.gradle` and `package.xml` files."""
 
     PRIORITY = 160
@@ -42,7 +42,7 @@ class RosGradlePackageIdentification(PackageIdentificationExtensionPoint):
         if metadata.name is not None and metadata.name != data['name']:
             raise RuntimeError('Package name already set to different value')
 
-        metadata.type = 'gradle'
+        metadata.type = 'ament_gradle'
         if metadata.name is None:
             metadata.name = data['name']
         metadata.dependencies['build'] |= data['depends']
