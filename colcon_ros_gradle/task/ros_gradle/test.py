@@ -29,6 +29,7 @@ class RosGradleTestTask(TaskExtensionPoint):
             help='Run a specific task instead of the default task')
 
     async def test(self, *, additional_hooks=None):  # noqa: D102
+        args = self.context.args
         logger.info(
             "Testing ROS package in '{args.path}' with build type "
             "'ros.gradle'".format_map(locals()))
