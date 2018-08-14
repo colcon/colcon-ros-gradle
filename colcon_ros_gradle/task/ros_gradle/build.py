@@ -31,6 +31,7 @@ class RosGradleBuildTask(TaskExtensionPoint):
     async def build(
         self, *, additional_hooks=None, skip_hook_creation=False
     ):  # noqa: D102
+        args = self.context.args
         logger.info(
             "Building ROS package in '{args.path}' with build type 'ros.gradle'"
             .format_map(locals()))
