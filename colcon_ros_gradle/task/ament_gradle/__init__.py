@@ -4,7 +4,6 @@
 import os
 from pathlib import Path
 import shutil
-import subprocess
 
 from colcon_core.environment_variable import EnvironmentVariable
 from colcon_core.subprocess import check_output
@@ -22,6 +21,7 @@ IS_WINDOWS = os.name == 'nt'
 
 """Check OS"""
 IS_WINDOWS = os.name == 'nt'
+
 
 def which_executable(environment_variable, executable_name):
     """
@@ -54,6 +54,7 @@ def which_executable(environment_variable, executable_name):
 
     return cmd
 
+
 GRADLE_EXECUTABLE = which_executable(
     GRADLE_COMMAND_ENVIRONMENT_VARIABLE.name, 'gradle')
 
@@ -82,4 +83,3 @@ async def get_gradle_tasks(path):
     lines = output.decode().splitlines()
     separator = ' - '
     return [l.split(separator)[0] for l in lines if separator in l]
-
