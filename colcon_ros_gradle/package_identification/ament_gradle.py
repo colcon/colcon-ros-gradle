@@ -9,8 +9,8 @@ from colcon_core.package_identification import logger
 from colcon_core.package_identification \
     import PackageIdentificationExtensionPoint
 
+from colcon_core.dependency_descriptor import DependencyDescriptor
 from colcon_ros.package_identification.ros import _get_package
-
 from colcon_core.plugin_system import satisfies_version
 from colcon_gradle.package_identification.gradle import extract_content
 from colcon_gradle.package_identification.gradle import extract_project_name
@@ -77,7 +77,10 @@ def ros_extract_data(package_path):
     pkg = _get_package(str(package_path))
 
     depends = {}
-    depends['build_depends'] = set([dep.name for dep in pkg.build_depends])
-    depends['run_depends'] = set([dep.name for dep in pkg.run_depends])
-    depends['test_depends'] = set([dep.name for dep in pkg.test_depends])
+    depends['build_depends'] = {
+        DependencyDescriptor(dep.name) for dep in pkg.build_depends}
+    depends['run_depends'] = {
+        DependencyDescriptor(dep.name) for dep in pkg.run_depends}
+    depends['test_depends'] = {
+        DependencyDescriptor(dep.name) for dep in pkg.test_depends}
     return depends
