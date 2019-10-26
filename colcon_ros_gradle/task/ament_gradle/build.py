@@ -2,8 +2,10 @@
 # Licensed under the Apache License, Version 2.0
 
 import os
+from pathlib import Path
 
 from colcon_core.logging import colcon_logger
+from colcon_core.shell import create_environment_hook
 
 from colcon_gradle.task.gradle.build import GradleBuildTask
 
@@ -22,6 +24,21 @@ class AmentGradleBuildTask(GradleBuildTask):
         parser.add_argument(
             '--ament-gradle-task',
             help='Run a specific task instead of the default task')
+
+    async def build(
+        self, *, additional_hooks=[], skip_hook_creation=False
+    ):  # noqa: D102
+        pkg = self.context.pkg
+        args = self.context.args
+
+        # TODO(jacobperron): This would be better handled by a more generic ament_java library
+        additional_hooks += create_environment_hook(
+            'ament_gradle_prefix_path', Path(args.install_base), pkg.name,
+            'AMENT_PREFIX_PATH', args.install_base,
+            mode='prepend')
+
+        return await super(AmentGradleBuildTask, self).build(
+            additional_hooks=additional_hooks, skip_hook_creation=skip_hook_creation)
 
     async def _build(self, args, env):
         ament_dependencies = ':'.join(
