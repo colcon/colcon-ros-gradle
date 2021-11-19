@@ -33,7 +33,7 @@ class AmentGradleBuildTask(GradleBuildTask):
 
         # TODO(jacobperron): This would be better handled by a more generic ament_java library
         additional_hooks += create_environment_hook(
-            'ament_gradle_prefix_path', Path(args.install_base), pkg.name,
+            'ament_prefix_path', Path(args.install_base), pkg.name,
             'AMENT_PREFIX_PATH', args.install_base,
             mode='prepend')
 
