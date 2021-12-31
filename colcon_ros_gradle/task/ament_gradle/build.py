@@ -65,3 +65,12 @@ class AmentGradleBuildTask(GradleBuildTask):
 
     async def _install(self, args, env):
         self.progress('install')
+
+        # Create Marker file
+        package_name = self.context.pkg.name
+        install_base = args.install_base
+        resource_index_dir = os.path.join("share", "ament_index", "resource_index", "packages")
+
+        marker_file_path = Path(os.path.join(install_base, resource_index_dir, package_name))
+        marker_file_path.parent.mkdir(parents=True, exist_ok=True)
+        marker_file_path.touch()
