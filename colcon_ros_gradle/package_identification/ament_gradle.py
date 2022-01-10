@@ -1,21 +1,16 @@
 # Copyright 2018 Esteve Fernandez
 # Licensed under the Apache License, Version 2.0
 
-import os
-from pathlib import Path
 import re
 
-from colcon_core.package_identification import logger
 from colcon_core.package_identification \
     import PackageIdentificationExtensionPoint
-
-from colcon_ros.package_identification.ros import _get_package
-
 from colcon_core.plugin_system import satisfies_version
 from colcon_gradle.package_identification.gradle import extract_content
-from colcon_gradle.package_identification.gradle import extract_project_name
 from colcon_gradle.package_identification.gradle import extract_data
-from colcon_gradle.package_identification.gradle import GradlePackageIdentification
+from colcon_gradle.package_identification.gradle \
+    import GradlePackageIdentification
+from colcon_ros.package_identification.ros import _get_package
 
 
 class AmentGradlePackageIdentification(GradlePackageIdentification):
@@ -58,6 +53,7 @@ class AmentGradlePackageIdentification(GradlePackageIdentification):
         metadata.dependencies['run'] |= ros_data['run_depends']
         metadata.dependencies['test'] |= ros_data['test_depends']
 
+
 def gradle_extract_data(build_gradle):
     """
     Extract the project name and dependencies from a build.gradle file.
@@ -67,17 +63,23 @@ def gradle_extract_data(build_gradle):
     """
     # Content for dependencies
     content_build_gradle = extract_content(build_gradle)
-    match = re.search(r'apply plugin: ("|\')org.ros2.tools.gradle\1', content_build_gradle)
+    match = re.search(
+        r'apply plugin: ("|\')org.ros2.tools.gradle\1', content_build_gradle
+    )
     if not match:
-        raise RuntimeError("Gradle plugin missing, please add the following to build.gradle: \"apply plugin: 'org.ros2.tools.gradle'\"")
+        raise RuntimeError(
+            'Gradle plugin missing, please add the following to build.gradle:'
+            " \"apply plugin: 'org.ros2.tools.gradle'\""
+        )
 
     return extract_data(build_gradle)
 
-def ros_extract_data(package_path):
+
+def ros_extract_data(package_path):  # noqa: D103
     pkg = _get_package(str(package_path))
 
     depends = {}
-    depends['build_depends'] = set([dep.name for dep in pkg.build_depends])
-    depends['run_depends'] = set([dep.name for dep in pkg.run_depends])
-    depends['test_depends'] = set([dep.name for dep in pkg.test_depends])
+    depends['build_depends'] = {dep.name for dep in pkg.build_depends}
+    depends['run_depends'] = {dep.name for dep in pkg.run_depends}
+    depends['test_depends'] = {dep.name for dep in pkg.test_depends}
     return depends
